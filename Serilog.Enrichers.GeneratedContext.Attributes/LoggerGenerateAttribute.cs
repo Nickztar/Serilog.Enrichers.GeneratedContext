@@ -1,0 +1,18 @@
+using System;
+using System.CodeDom.Compiler;
+
+namespace Serilog.Enrichers.GeneratedContext;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
+[GeneratedCode("Serilog.Enrichers.GeneratedContext", "1.0.0.0")]
+public sealed class LoggerGenerateAttribute : Attribute
+{
+    public int GenericOverrideCount { get; }
+    public string ContextName { get; }
+
+    public LoggerGenerateAttribute(int genericOverrideCount, string contextName = "MethodName")
+    {
+        GenericOverrideCount = Math.Max(0, genericOverrideCount);
+        ContextName = contextName;
+    }
+}
