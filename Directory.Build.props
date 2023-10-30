@@ -1,0 +1,18 @@
+﻿<Project>
+    <PropertyGroup>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>$(ProjectName)</PackageId>
+        <PackageVersion>0.1.0-alpha1</PackageVersion>
+        <Version>0.1.0-alpha1</Version>
+        <Authors>Nicholas Brostrom</Authors>
+        <RepositoryUrl>https://github.com/Nickztar/Serilog.Enrichers.GeneratedContext</RepositoryUrl>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <Description>A source code generator for automatically generating Log methods that enriches Serilog with caller context.</Description>
+        <PackageTags>source generator, serilog, enrichers, context, logcontext</PackageTags>
+        <NoPackageAnalysis>true</NoPackageAnalysis>
+    </PropertyGroup>
+</Project>

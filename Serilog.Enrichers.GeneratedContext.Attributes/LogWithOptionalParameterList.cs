@@ -10,9 +10,7 @@ namespace Serilog.Enrichers.GeneratedContext;
 /// </summary>
 [GeneratedCode("Serilog.Enrichers.GeneratedContext", "1.0.0.0")]
 // ReSharper disable once UnusedType.Global
-#pragma warning disable CA1508
 public struct LogWithOptionalParameterList
 {
     // This type has no other purpose.
 }
-#pragma warning restore CA1508
