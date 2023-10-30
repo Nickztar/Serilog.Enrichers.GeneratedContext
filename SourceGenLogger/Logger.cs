@@ -11,7 +11,8 @@ namespace SourceGenLogger;
 //https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.defaultinterpolatedstringhandler?view=net-7.0
 [LoggerGenerate(
     genericOverrideCount: 4,
-    contextName: "MethodContext"
+    contextName: "MethodContext",
+    contextSuffix: " - "
 )]
 public static partial class Logger
 {

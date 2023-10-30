@@ -86,7 +86,7 @@ namespace Serilog.Enrichers.GeneratedContext
         /// <summary>
         /// Forward write to internal Serilog write, but adding the context for the method
         /// </summary>
-        private const string WriteMethod = """Serilog.Log.ForContext("{0}", $"{{Path.GetFileNameWithoutExtension(sourceFilePath)}}.{{memberName}}: ").Write""";
+        private const string WriteMethod = """Serilog.Log.ForContext("{0}", $"{{Path.GetFileNameWithoutExtension(sourceFilePath)}}.{{memberName}}{1}").Write""";
         
         private static readonly string[] AllLogLevels = {
             "Verbose",
@@ -110,11 +110,11 @@ namespace Serilog.Enrichers.GeneratedContext
                 if (capture.ClassDeclaration == null) continue;
 
                 var semanticModel = context.Compilation.GetSemanticModel(capture.ClassDeclaration.SyntaxTree);
-                var (genericOverrideCount, contextName) = GetAttributeArguments(semanticModel, capture.AttributeDeclaration);
+                var (genericOverrideCount, contextName, contextSuffix) = GetAttributeArguments(semanticModel, capture.AttributeDeclaration);
 
                 var methodSources = new StringBuilder();
                 
-                var writeMethod = string.Format(WriteMethod, contextName);
+                var writeMethod = string.Format(WriteMethod, contextName, contextSuffix);
                 foreach (var logEvenLevel in AllLogLevels)
                 {
                     // method without exception and without propertyValues
@@ -235,24 +235,28 @@ namespace Serilog.Enrichers.GeneratedContext
 
             context.RegisterForSyntaxNotifications(() => new ClassOrInterfaceAttributeSyntaxReceiver("LoggerGenerateAttribute"));
         }
-        private static (int GenericOverrideCount, string ContextName) GetAttributeArguments(SemanticModel semanticModel, AttributeSyntax attribute)
+        private static (int GenericOverrideCount, string ContextName, string? ContextSuffix) GetAttributeArguments(SemanticModel semanticModel, AttributeSyntax attribute)
         {
-            var genericOverrideCountArgument = attribute.ArgumentList!.Arguments[0];
-            var genericOverrideCountExpression = genericOverrideCountArgument.Expression;
-            var genericOverrideCountOptional = semanticModel.GetConstantValue(genericOverrideCountExpression);
-            if (!genericOverrideCountOptional.HasValue || genericOverrideCountOptional.Value == null) 
+            var count = GetAttributeArgument<int?>(semanticModel, attribute.ArgumentList!.Arguments, 0);
+            if (!count.HasValue) 
                 throw new SourceGeneratorException("Failed to parse 'genericOverrideCount' argument");
-            var genericOverrideCount = Math.Max(0, (int)genericOverrideCountOptional.Value);
+            var genericOverrideCount = Math.Max(0, count.Value);
 
-            var contextNameArgument = attribute.ArgumentList!.Arguments.ElementAtOrDefault(1);
-            if (contextNameArgument == null) 
-                return (genericOverrideCount, "MethodName");
+            var contextName = GetAttributeArgument<string?>(semanticModel, attribute.ArgumentList!.Arguments, 1);
+            var contextSuffix = GetAttributeArgument<string?>(semanticModel, attribute.ArgumentList!.Arguments, 2);
                 
-            var contextNameExpression = contextNameArgument.Expression;
-            var contextNameOptional = semanticModel.GetConstantValue(contextNameExpression);
-            var contextName = contextNameOptional is { HasValue: true, Value: not null } ? (string)contextNameOptional.Value : "MethodName";
-
-            return (genericOverrideCount, contextName);
+            return (genericOverrideCount, contextName ?? "MethodName", contextSuffix);
+        }
+        
+        static T? GetAttributeArgument<T>(SemanticModel model, SeparatedSyntaxList<AttributeArgumentSyntax> arguments, int wantedIndex)
+        {
+            var argument = arguments.ElementAtOrDefault(wantedIndex);
+            if (argument == null) return default;
+            var argumentExpression = argument.Expression;
+            var argumentOptional = model.GetConstantValue(argumentExpression);
+            if (!argumentOptional.HasValue || argumentOptional.Value == null) 
+                return default;
+            return (T)argumentOptional.Value;
         }
     }
 }

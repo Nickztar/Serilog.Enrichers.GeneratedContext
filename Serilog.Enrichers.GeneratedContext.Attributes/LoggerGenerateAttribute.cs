@@ -9,10 +9,12 @@ public sealed class LoggerGenerateAttribute : Attribute
 {
     public int GenericOverrideCount { get; }
     public string ContextName { get; }
+    public string ContextSuffix { get; }
 
-    public LoggerGenerateAttribute(int genericOverrideCount, string contextName = "MethodName")
+    public LoggerGenerateAttribute(int genericOverrideCount, string contextName = "MethodName", string contextSuffix = "")
     {
         GenericOverrideCount = Math.Max(0, genericOverrideCount);
         ContextName = contextName;
+        ContextSuffix = contextSuffix;
     }
 }
