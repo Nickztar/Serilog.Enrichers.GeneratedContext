@@ -86,7 +86,7 @@ namespace Serilog.Enrichers.GeneratedContext
         /// <summary>
         /// Forward write to internal Serilog write, but adding the context for the method
         /// </summary>
-        private const string WriteMethod = """Serilog.Log.ForContext("{0}", $"{{Path.GetFileNameWithoutExtension(sourceFilePath)}}.{{memberName}}").Write""";
+        private const string WriteMethod = """Serilog.Log.ForContext("{0}", $"{{Path.GetFileNameWithoutExtension(sourceFilePath)}}.{{memberName}}: ").Write""";
         
         private static readonly string[] AllLogLevels = {
             "Verbose",
