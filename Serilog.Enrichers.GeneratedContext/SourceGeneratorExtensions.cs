@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace Serilog.Enrichers.GeneratedContext
@@ -30,5 +33,60 @@ namespace Serilog.Enrichers.GeneratedContext
 
             return @default;
         }
+        
+        public static T? RetrieveValue<T>(this AttributeData? attribute, string key)
+        {
+            return attribute.TryGetValue<T>(key, out var value) ? value : default;
+        }
+        
+        public static bool TryGetValue<T>(this AttributeData? attribute, string key, out T? value)
+        {
+            value = default;
+
+            if (attribute is null)
+                return false;
+
+            var named = attribute.NamedArguments.FirstOrDefault(p => p.Key == key);
+            if (named.Key == key && TryRead<T>(named.Value, out value))
+                return true;
+
+            var ctor = attribute.AttributeConstructor;
+            if (ctor is null) return false;
+            for (var i = 0; i < ctor.Parameters.Length; i++)
+            {
+                if (ctor.Parameters[i].Name == key &&
+                    i < attribute.ConstructorArguments.Length &&
+                    TryRead<T>(attribute.ConstructorArguments[i], out value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        private static bool TryRead<T>(TypedConstant constant, out T? value)
+        {
+            value = default;
+
+            if (constant.IsNull)
+                return true;
+
+            if (typeof(T).IsEnum && constant.Value is not null)
+            {
+                value = (T)Enum.ToObject(typeof(T), constant.Value);
+                return true;
+            }
+
+            if (constant.Value is not T t) return false;
+            value = t;
+            return true;
+
+        }
     }
 }
+
+ namespace System.Runtime.CompilerServices
+ {
+     internal static class IsExternalInit {}
+ }

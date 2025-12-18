@@ -23,6 +23,7 @@ public static partial class Logger
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .MinimumLevel.Override("System.Net.Http", LogEventLevel.Warning)
             .MinimumLevel.Override("Hangfire", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
 #if DEBUG
             .WriteTo.Console(outputTemplate: "{Level:u3} {MethodContext} - {Message}{NewLine}{Exception}")
 #endif
@@ -40,8 +41,8 @@ public static partial class Logger
     //
     public static void TestLog()
     {
-        Debug("tst {Unknown} {Unknown} {Unknown}", 1, 2, 4);
-        Debug("tst {Unknown} {Unknown} {Unknown} {Unknown}", 1, 2, 4, 4);
+        Debug("tst {Unknown} {Unknown1} {Unknown2}", 1, 2, 4);
+        Debug("tst {Unknown} {Unknown1} {Unknown2} {Unknown3}", 1, 2, 4, 4);
         Debug("test");
         Serilog.Log.Write(LogEventLevel.Debug, "test", null);
     }
