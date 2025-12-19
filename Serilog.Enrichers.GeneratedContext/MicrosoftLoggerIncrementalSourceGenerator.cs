@@ -53,22 +53,22 @@ namespace Serilog.Enrichers.GeneratedContext
 
         private static readonly Dictionary<string, string> ExampleCodesWithoutException = new()
         {
-            { "Trace", "Log.Verbose(\"Staring into space, wondering if we're alone.\");" },
-            { "Debug", "Log.Debug(\"Starting up at {StartedAt}.\", DateTime.Now);" },
-            { "Information", "Log.Information(\"Processed {RecordCount} records in {TimeMS}.\", records.Length, sw.ElapsedMilliseconds);" },
-            { "Warning", "Log.Warning(\"Skipped {SkipCount} records.\", skippedRecords.Length);" },
-            { "Error", "Log.Error(\"Failed {ErrorCount} records.\", brokenRecords.Length);" },
-            { "Fatal", "Log.Fatal(\"Process terminating.\");" },
+            { "Trace", "ilogger.Verbose(\"Staring into space, wondering if we're alone.\");" },
+            { "Debug", "ilogger.Debug(\"Starting up at {StartedAt}.\", DateTime.Now);" },
+            { "Information", "ilogger.Information(\"Processed {RecordCount} records in {TimeMS}.\", records.Length, sw.ElapsedMilliseconds);" },
+            { "Warning", "ilogger.Warning(\"Skipped {SkipCount} records.\", skippedRecords.Length);" },
+            { "Error", "ilogger.Error(\"Failed {ErrorCount} records.\", brokenRecords.Length);" },
+            { "Fatal", "ilogger.Fatal(\"Process terminating.\");" },
         };
 
         private static readonly Dictionary<string, string> ExampleCodesWithException = new()
         {
-            { "Trace", "Log.Verbose(ex, \"Staring into space, wondering where this comet came from.\");" },
-            { "Debug", "Log.Debug(ex, \"Swallowing a mundane exception.\");" },
-            { "Information", "Log.Information(ex, \"Processed {RecordCount} records in {TimeMS}.\", records.Length, sw.ElapsedMilliseconds);" },
-            { "Warning", "Log.Warning(ex, \"Skipped {SkipCount} records.\", skippedRecords.Length);" },
-            { "Error", "Log.Error(ex, \"Failed {ErrorCount} records.\", brokenRecords.Length);" },
-            { "Fatal", "Log.Fatal(ex, \"Process terminating.\");" },
+            { "Trace", "ilogger.Verbose(ex, \"Staring into space, wondering where this comet came from.\");" },
+            { "Debug", "ilogger.Debug(ex, \"Swallowing a mundane exception.\");" },
+            { "Information", "ilogger.Information(ex, \"Processed {RecordCount} records in {TimeMS}.\", records.Length, sw.ElapsedMilliseconds);" },
+            { "Warning", "ilogger.Warning(ex, \"Skipped {SkipCount} records.\", skippedRecords.Length);" },
+            { "Error", "ilogger.Error(ex, \"Failed {ErrorCount} records.\", brokenRecords.Length);" },
+            { "Fatal", "ilogger.Fatal(ex, \"Process terminating.\");" },
         };
 
         private static readonly string ExceptionDocumentationComment = $"{NewLine}{Tab}/// <param name=\"exception\">Exception related to the event.</param>";
@@ -79,9 +79,9 @@ namespace Serilog.Enrichers.GeneratedContext
         /// Forward write to internal Serilog write, but adding the context for the method
         /// </summary>
         private const string WriteMethod = "msLogger.Log{0}";
-        
+
         // using (ilogger.BeginScope(new Dictionary<string, string>(){ { "Method", $"{Path.GetFileNameWithoutExtension(sourceFilePath)}.{memberName}" }}))
-        
+
         private static readonly string[] AllLogLevels =
         [
             "Trace",
@@ -105,15 +105,15 @@ namespace Serilog.Enrichers.GeneratedContext
         internal record LoggerAttributeData(int GenericOverrideCount, string ContextName, string? ContextSuffix);
         private static LoggerData? GetConfiguration(GeneratorAttributeSyntaxContext context, CancellationToken cancellationToken)
         {
-        
+
             cancellationToken.ThrowIfCancellationRequested();
             if (context.TargetSymbol is not INamedTypeSymbol typeSymbol) return null;
             var attribute = context.Attributes.FirstOrDefault(p => p.AttributeClass?.Name == "MicrosoftLoggerGenerateAttribute");
             return new LoggerData(
-                typeSymbol.ContainingNamespace.ToDisplayString(), 
-                typeSymbol.DeclaredAccessibility.ToString().ToLowerInvariant(), 
-                typeSymbol.TypeKind.ToString().ToLowerInvariant(), 
-                typeSymbol.Name, 
+                typeSymbol.ContainingNamespace.ToDisplayString(),
+                typeSymbol.DeclaredAccessibility.ToString().ToLowerInvariant(),
+                typeSymbol.TypeKind.ToString().ToLowerInvariant(),
+                typeSymbol.Name,
                 new LoggerAttributeData(
                     attribute.RetrieveValue<int>("genericOverrideCount"),
                     attribute.RetrieveValue<string?>("contextName") ?? "MethodName",
@@ -143,12 +143,12 @@ namespace Serilog.Enrichers.GeneratedContext
                          using Serilog.Core;
                          using System.Runtime.CompilerServices;
                          using Microsoft.Extensions.Logging;
-                         
+
                          #pragma warning disable CS0618
                          #pragma warning disable CS0612
-                         namespace {{logData.Namespace}} 
+                         namespace {{logData.Namespace}}
                          {
-                             {{logData.Modifiers}} static partial {{logData.Keyword}} {{logData.Name}} 
+                             {{logData.Modifiers}} static partial {{logData.Keyword}} {{logData.Name}}
                              {
                          {{BuildLogMethods(ref logData)}}
                              }
@@ -161,7 +161,7 @@ namespace Serilog.Enrichers.GeneratedContext
             private static string BuildLogMethods(ref LoggerData logData)
             {
                 var builder = new StringBuilder();
-                
+
 #if DEBUG
             if (Debug && !Debugger.IsAttached) Debugger.Launch();
 #endif
@@ -205,7 +205,7 @@ namespace Serilog.Enrichers.GeneratedContext
 
                     // generic methods with and without exception, and with propertyValue(s)
                     if (logData.Attribute.GenericOverrideCount == 0) continue;
-                    
+
                     var propValueComments = new StringBuilder().AppendLine().Append(Tab);
                     var genericParams = new StringBuilder().Append("<");
                     var propValueParams = new StringBuilder().Append(", ");
